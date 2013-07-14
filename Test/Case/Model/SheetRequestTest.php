@@ -9,7 +9,7 @@ class SheetRequestTest extends CakeTestCase {
 		self::$testResponses = array(
 			'listSpreadsheets' => file_get_contents($testFilesPath . 'list_spreadsheets.xml'),
 			'listWorksheets' => file_get_contents($testFilesPath . 'list_worksheets.xml'),
-			'listRows' => file_get_contents($testFilesPath . 'list_rows.xml'),
+			'listCols' => file_get_contents($testFilesPath . 'list_cols.xml'),
 		);
 	}
 
@@ -108,17 +108,17 @@ class SheetRequestTest extends CakeTestCase {
 		$this->assertSame('worksheetid2', (string)$result->entry[1]->worksheetId);
 	}
 
-	public function testListRows() {
+	public function testListCols() {
 		$this->SheetRequest->getService()->worksheets->expects($this->once())
 			->method('__call')
-			->will($this->returnValue(self::$testResponses['listRows']))
+			->will($this->returnValue(self::$testResponses['listCols']))
 		;
-		$result = $this->SheetRequest->listRows('spreadsheetkey1', 'worksheetid1');
+		$result = $this->SheetRequest->listCols('spreadsheetkey1', 'worksheetid1');
 		$this->assertInstanceOf('SimpleXMLElement', $result);
 		$this->assertSame('spreadsheetkey1', (string)$result->key);
 		$this->assertSame('worksheetid1', (string)$result->worksheetId);
-		$this->assertSame(8, $result->entry->count());
-		$this->assertSame('d415a', (string)$result->entry[1]->rowId);
+		$this->assertSame(32, $result->entry->count());
+		$this->assertSame('R1C2', (string)$result->entry[1]->colId);
 	}
 
 }

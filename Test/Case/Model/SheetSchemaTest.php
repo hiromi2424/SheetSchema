@@ -11,7 +11,7 @@ class SheetSchemaTest extends CakeTestCase {
 	public static function setUpBeforeClass() {
 		$testFilesPath = CakePlugin::path('SheetSchema') . 'Test' . DS . 'files' . DS;
 		self::$testObjects = array(
-			'rows' => new SimpleXMLElement(file_get_contents($testFilesPath . 'list_rows.xml')),
+			'cols' => new SimpleXMLElement(file_get_contents($testFilesPath . 'list_cols.xml')),
 		);
 		self::$backups['settings'] = SheetSchemaAppModel::$settings;
 		SheetSchemaAppModel::$settings = array(
@@ -41,8 +41,8 @@ class SheetSchemaTest extends CakeTestCase {
 		parent::tearDown();
 	}
 
-	public function testExtractRows() {
-		$result = $this->SheetSchema->extractRows(self::$testObjects['rows']);
+	public function testExtractCols() {
+		$result = $this->SheetSchema->extractCols(self::$testObjects['cols']);
 		$expected = array(
 			'customers' => array(
 				'fields' => array(
@@ -60,14 +60,92 @@ class SheetSchemaTest extends CakeTestCase {
 					'number' => array(
 						'type' => 'integer',
 					),
-					'group' => array(
+					'group_id' => array(
 						'type' => 'integer',
+						'index' => 'index',
+						'null' => 'no',
+					),
+					'description' => array(
+						'type' => 'text',
 					),
 				),
-				'initialRecords' => array(),
+				'initialRecords' => array(
+					[
+						0 => '1',
+						1 => 'John',
+						2 => '3',
+						3 => '2',
+					],
+					[
+						0 => '2',
+						1 => 'Mike',
+						3 => '5',
+					],
+				),
 			),
 		);
 		$this->assertSame($expected, $result);
+	}
+
+	public function testTranslate() {
+		$result = $this->SheetSchema->translate(array(
+			'id' => array(
+				'type' => 'int',
+				'index' => 'primary',
+				'null' => 'no',
+			),
+			'name' => array(
+				'type' => 'string',
+				'length' => '30',
+				'null' => 'no',
+				'comment' => 'customer name',
+			),
+			'number' => array(
+				'type' => 'integer',
+			),
+			'group_id' => array(
+				'type' => 'integer',
+				'index' => 'index',
+				'null' => 'no',
+			),
+			'description' => array(
+				'type' => 'text',
+			),
+		));
+
+		$expected = array(
+			'id' => array(
+				'type' => 'integer',
+				'null' => false,
+				'key' => 'primary',
+			),
+			'name' => array(
+				'type' => 'string',
+				'length' => 30,
+				'null' => false,
+				'comment' => 'customer name',
+			),
+			'number' => array(
+				'type' => 'integer',
+				'null' => true,
+				'default' => null,
+			),
+			'group_id' => array(
+				'type' => 'integer',
+				'null' => false,
+				'key' => 'index',
+			),
+			'description' => array(
+				'type' => 'text',
+				'null' => true,
+				'default' => null,
+			),
+			'indexes' => array(
+				'PRIMARY' => array('column' => 'id', 'unique' => true),
+				'group_id' => array('column' => 'group_id', 'unique' => false),
+			)
+		);
+		$this->assertEquals($expected, $result);
 	}
 
 }

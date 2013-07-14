@@ -47,20 +47,20 @@ class SheetRequest extends SheetSchemaAppModel {
 			foreach ($result->entry as $worksheet) {
 				$worksheet->key = $key;
 				$worksheet->worksheetId = $this->_extractId($worksheet);
-		$this->getService()->worksheets->colsFeed($key, $worksheet->worksheetId);
+		//$this->getService()->worksheets->cellsFeed($key, $worksheet->worksheetId);
 			}
 		}
 		return $result;
 	}
 
-	public function listRows($key, $worksheetId) {
-		$result = $this->getService()->worksheets->listRows($key, $worksheetId);
+	public function listCols($key, $worksheetId) {
+		$result = $this->getService()->worksheets->cellsFeed($key, $worksheetId);
 
 		if (!empty($result)) {
 			$result->key = $key;
 			$result->worksheetId = $worksheetId;
-			foreach ($result->entry as $row) {
-				$row->rowId = $this->_extractId($row);
+			foreach ($result->entry as $col) {
+				$col->colId = $this->_extractId($col);
 			}
 		}
 		return $result;

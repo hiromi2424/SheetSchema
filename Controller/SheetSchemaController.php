@@ -74,16 +74,19 @@ class SheetSchemaController extends SheetSchemaAppController {
 
 		$sql = array();
 		if ($showSql && !empty($worksheets->entry)) {
-			$worksheetRows = array();
+			$worksheetCols = array();
 			foreach ($worksheet->entry as $worksheet) {
-				$worksheetRows[] = $this->SheetRequest->listRows($worksheet->key, $worksheet->worksheetId);
+				$worksheetCols[] = $this->SheetRequest->listCols($worksheet->key, $worksheet->worksheetId);
 			}
-			$extracted = $this->SheetSchema->extractWorksheetRows($worksheetRows);
-			$Schema = $this->SheetSchema->generateSchema($extracted);
-			$db = ConnectionManager::getDataSource($this->sheetSchemaSettings['database']);
+
+			$database = $this->sheetSchemaSettings['database'];
+			$this->SheetSchema->setDatasource($database);
+			$extracted = $this->SheetSchema->extractWorksheetCols($worksheetCols);
+			$Schema = $this->SheetSchema->generateSchema($extracted['columns']);
+			$db = ConnectionManager::getDataSource($database);
 			$sql[] = $db->dropSchema($Schema);
 			$sql[] = $db->createSchema($Schema);
-			$sql[] = $this->SheetSchema->initialRecordsSql();
+			$sql[] = $this->SheetSchema->insertInitialRecords($extracted['initialFields']);
 		}
 		$this->set(compact('sql'));
 	}

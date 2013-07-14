@@ -9,9 +9,23 @@
 
 <?php echo $this->Form->input('client_id', array('type' => 'text', 'label' => __d('sheet_schema', 'Client ID'))); ?>
 <?php echo $this->Form->input('client_secret', array('type' => 'text', 'label' => __d('sheet_schema', 'Client secret'))); ?>
-<?php echo $this->Form->input('redirect_uri', array('type' => 'url', 'label' => __d('sheet_schema', 'Redirect URI'))); ?>
+<?php echo $this->Form->input('redirect_uri', array('type' => 'url', 'label' => __d('sheet_schema', 'Redirect URI'), 'default' => Router::url(array(
+	'controller' => 'sheet_schema',
+	'action' => 'oauth2callback'
+), true))); ?>
 
-<p><?php echo __d('sheet_schema', 'You need to specify redirect url as like WEBROOT/sheet_schema/sheet_schema/oauth2callback'); ?></p>
+<p><?php echo __d(
+	'sheet_schema',
+	'You need to specify redirect url as like WEBROOT%s',
+	preg_replace(
+		sprintf('/^%s/', preg_quote($this->request->webroot, '/')),
+		'',
+		$this->Html->url(array(
+		'controller' => 'sheet_schema',
+		'action' => 'oauth2callback'
+		))
+	)
+); ?></p>
 
 </fieldset>
 

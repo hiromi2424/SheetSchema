@@ -25,7 +25,7 @@ class Google_SpreadsheetService_ServiceResource extends Google_ServiceResource {
 		if ($xml === null) {
 			return null;
 		}
-		CakeLog::debug($xml);
+		//CakeLog::debug($xml);
 
 		$internalErrors = libxml_use_internal_errors(true);
 		$result = new SimpleXMLElement($xml, LIBXML_NOCDATA);
@@ -53,15 +53,15 @@ class Google_WorksheetsServiceResource extends Google_SpreadsheetService_Service
 		return $this->_parseXml($data);
 	}
 
-	public function listRows($key, $worksheetId, $optParams = array()) {
+	public function listFeed($key, $worksheetId, $optParams = array()) {
 		$params = array_merge(array('visibility' => 'private', 'projection' => 'full'), $optParams, compact('key', 'worksheetId'));
-		$data = $this->__call('listRows', array($params));
+		$data = $this->__call('listFeed', array($params));
 		return $this->_parseXml($data);
 	}
 
-	public function colsFeed($key, $worksheetId, $optParams = array()) {
+	public function cellsFeed($key, $worksheetId, $optParams = array()) {
 		$params = array_merge(array('visibility' => 'private', 'projection' => 'full'), $optParams, compact('key', 'worksheetId'));
-		$data = $this->__call('cols', array($params));
+		$data = $this->__call('cellsFeed', array($params));
 		return $this->_parseXml($data);
 	}
 
@@ -113,19 +113,22 @@ class Google_SpreadsheetService extends Google_Service {
 
 		$worksheetMethodBase = array(
 			'parameters' => compact('visibility', 'projection', 'key'),
-			'id' => 'spreadsheets.worksheets.list',
 			'httpMethod' => 'GET',
-			'path' => 'worksheets/{key}/{visibility}/{projection}',
 		);
 		$worksheetsMethods = array(
-			'list' => $worksheetMethodBase,
-			'listRows' => self::_mergeRecursive($worksheetMethodBase, array(
-				'parameters' => compact('worksheetId'),
-				'path' => 'list/{key}/{worksheetId}/{visibility}/{projection}',
+			'list' => self::_mergeRecursive($worksheetMethodBase, array(
+				'id' => 'spreadsheets.worksheets.list',
+				'path' => 'worksheets/{key}/{visibility}/{projection}',
 			)),
-			'cols' => self::_mergeRecursive($worksheetMethodBase, array(
+			'listFeed' => self::_mergeRecursive($worksheetMethodBase, array(
+				'id' => 'spreadsheets.worksheets.listFeed',
+				'path' => 'list/{key}/{worksheetId}/{visibility}/{projection}',
 				'parameters' => compact('worksheetId'),
+			)),
+			'cellsFeed' => self::_mergeRecursive($worksheetMethodBase, array(
+				'id' => 'spreadsheets.worksheets.cellsFeed',
 				'path' => 'cells/{key}/{worksheetId}/{visibility}/{projection}',
+				'parameters' => compact('worksheetId'),
 			)),
 		);
 		$this->worksheets = new Google_WorksheetsServiceResource($this, $this->serviceName, 'worksheets', array('methods' => $worksheetsMethods));
