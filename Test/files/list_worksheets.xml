@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns='http://www.w3.org/2005/Atom' xmlns:openSearch='http://a9.com/-/spec/opensearchrss/1.0/' xmlns:gs='http://schemas.google.com/spreadsheets/2006'>
+	<id>https://spreadsheets.google.com/feeds/worksheets/worksheetkey1/private/full</id>
+	<updated>2013-05-02T06:32:31.372Z</updated>
+	<category scheme='http://schemas.google.com/spreadsheets/2006' term='http://schemas.google.com/spreadsheets/2006#worksheet'/>
+	<title type='text'>SheetSchema Worksheet Format</title>
+	<link rel='alternate' type='text/html' href='https://spreadsheets.google.com/ccc?key=worksheetkey1'/>
+	<link rel='http://schemas.google.com/g/2005#feed' type='application/atom+xml' href='https://spreadsheets.google.com/feeds/worksheets/worksheetkey1/private/full'/>
+	<link rel='http://schemas.google.com/g/2005#post' type='application/atom+xml' href='https://spreadsheets.google.com/feeds/worksheets/worksheetkey1/private/full'/>
+	<link rel='self' type='application/atom+xml' href='https://spreadsheets.google.com/feeds/worksheets/worksheetkey1/private/full'/>
+	<author>
+	<name>hiromi2424</name>
+	<email>hiromi2424@gmail.com</email></author>
+	<openSearch:totalResults>1</openSearch:totalResults>
+	<openSearch:startIndex>1</openSearch:startIndex>
+
+	<entry>
+		<id>https://spreadsheets.google.com/feeds/worksheets/worksheetkey1/private/full/worksheetid1</id>
+		<updated>2013-05-01T08:19:54.645Z</updated>
+		<category scheme='http://schemas.google.com/spreadsheets/2006' term='http://schemas.google.com/spreadsheets/2006#worksheet'/>
+		<title type='text'>customers</title>
+		<content type='text'>customers</content>
+		<link rel='http://schemas.google.com/spreadsheets/2006#listfeed' type='application/atom+xml' href='https://spreadsheets.google.com/feeds/list/worksheetkey1/worksheetid1/private/full'/>
+		<link rel='http://schemas.google.com/spreadsheets/2006#cellsfeed' type='application/atom+xml' href='https://spreadsheets.google.com/feeds/cells/worksheetkey1/worksheetid1/private/full'/>
+		<link rel='http://schemas.google.com/visualization/2008#visualizationApi' type='application/atom+xml' href='https://spreadsheets.google.com/tq?key=worksheetkey1&amp;sheet=worksheetid1'/>
+		<link rel='self' type='application/atom+xml' href='https://spreadsheets.google.com/feeds/worksheets/worksheetkey1/private/full/worksheetid1'/>
+		<link rel='edit' type='application/atom+xml' href='https://spreadsheets.google.com/feeds/worksheets/worksheetkey1/private/full/worksheetid1/editkey1'/>
+		<gs:rowCount>20</gs:rowCount>
+		<gs:colCount>3</gs:colCount>
+	</entry>
+
+	<entry>
+		<id>https://spreadsheets.google.com/feeds/worksheets/worksheetkeyworksheetid2/private/full/worksheetid2</id>
+		<updated>2013-05-01T08:19:54.645Z</updated>
+		<category scheme='http://schemas.google.com/spreadsheets/2006' term='http://schemas.google.com/spreadsheets/2006#worksheet'/>
+		<title type='text'>customers</title>
+		<content type='text'>customers</content>
+		<link rel='http://schemas.google.com/spreadsheets/2006#listfeed' type='application/atom+xml' href='https://spreadsheets.google.com/feeds/list/worksheetkey2/worksheetid2/private/full'/>
+		<link rel='http://schemas.google.com/spreadsheets/2006#cellsfeed' type='application/atom+xml' href='https://spreadsheets.google.com/feeds/cells/worksheetkey2/worksheetid2/private/full'/>
+		<link rel='http://schemas.google.com/visualization/2008#visualizationApi' type='application/atom+xml' href='https://spreadsheets.google.com/tq?key=worksheetkey2&amp;sheet=worksheetid2'/>
+		<link rel='self' type='application/atom+xml' href='https://spreadsheets.google.com/feeds/worksheets/worksheetkey2/private/full/worksheetid2'/>
+		<link rel='edit' type='application/atom+xml' href='https://spreadsheets.google.com/feeds/worksheets/worksheetkey2/private/full/worksheetid2/editkey2'/>
+		<gs:rowCount>20</gs:rowCount>
+		<gs:colCount>3</gs:colCount>
+	</entry>
+
+</feed>
