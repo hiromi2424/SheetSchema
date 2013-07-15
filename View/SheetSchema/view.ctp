@@ -17,3 +17,25 @@
 	<?php endforeach;  ?>
 </ul>
 
+<?php if (!empty($errors)): ?>
+	<p class="warning"><?php echo __d('cake_schema', 'Worksheets have some errors:'); ?></p>
+<ul class="error">
+	<?php foreach ($errors as $error): ?>
+		<li><?php echo h($error); ?></li>
+	<?php endforeach; ?>
+</ul>
+<?php endif; ?>
+
+<?php if (!empty($sql)): ?>
+	<h3><?php echo __d('cake_schema', 'Following sqls will be processed:'); ?></h3>
+<ul>
+	<?php foreach ($sql as $s): ?>
+		<li><?php echo h($s); ?></li>
+	<?php endforeach; ?>
+</ul>
+<?php endif; ?>
+
+<?php $this->start('menu'); ?>
+<li><a href="<?php echo $this->Html->url(array('action' => $this->request->action, $key, !$showSql)); ?>"><?php echo $showSql ? __d('cake_schema', 'Hide SQL') : __d('cake_schema', 'Show SQL'); ?></a></li>
+<li><?php echo $this->Form->postLink(__d('cake_schema', 'Import to DB'), array('action' => 'process', $key)); ?></li>
+<?php $this->end('menu'); ?>

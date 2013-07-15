@@ -70,29 +70,59 @@ class SheetSchemaController extends SheetSchemaAppController {
 
 	public function view($key, $showSql = false) {
 		$worksheets = $this->SheetRequest->listWorksheets($key);
-		$this->set(compact('worksheets'));
 
+		if ($showSql) {
+			$prepared = $this->_prepare($worksheets);
+			extract($this->_processSql($prepared));
+		}
+		$this->set(compact('key', 'worksheets', 'sql', 'errors', 'showSql'));
+	}
+
+	protected function _processSql($prepared) {
+		extract($prepared);
 		$sql = array();
-		if ($showSql && !empty($worksheets->entry)) {
+		if (!$errors) {
+			foreach (array_keys($Schema->tables) as $table) {
+				$sql[] = $db->dropSchema($Schema, $table);
+				$sql[] = $db->createSchema($Schema, $table);
+			}
+			$sql[] = $this->SheetSchema->insertInitialRecords($extracted['initialRecords']);
+		}
+		return compact('sql', 'errors', 'db', 'Schema');
+	}
+
+	protected function _prepare($worksheets) {
+		$errors = array(__d('sheet_schema', 'No worksheet entries found.'));
+		if (!empty($worksheets->entry)) {
 			$worksheetCols = array();
-			foreach ($worksheet->entry as $worksheet) {
+			foreach ($worksheets->entry as $worksheet) {
 				$worksheetCols[] = $this->SheetRequest->listCols($worksheet->key, $worksheet->worksheetId);
 			}
 
 			$database = $this->sheetSchemaSettings['database'];
 			$this->SheetSchema->setDatasource($database);
 			$extracted = $this->SheetSchema->extractWorksheetCols($worksheetCols);
-			$Schema = $this->SheetSchema->generateSchema($extracted['columns']);
-			$db = ConnectionManager::getDataSource($database);
-			$sql[] = $db->dropSchema($Schema);
-			$sql[] = $db->createSchema($Schema);
-			$sql[] = $this->SheetSchema->insertInitialRecords($extracted['initialFields']);
+			$errors = $this->SheetSchema->getErrors();
+			if (!$errors) {
+				$Schema = $this->SheetSchema->generateSchema($extracted['columns']);
+				$db = ConnectionManager::getDataSource($database);
+			}
 		}
-		$this->set(compact('sql'));
+		return compact('extracted', 'errors', 'Schema', 'db');
 	}
 
 	public function process($key) {
-		
+		$worksheets = $this->SheetRequest->listWorksheets($key);
+		$prepared = $this->_prepare($worksheets);
+		extract($this->_processSql($prepared));
+		if (!$errors) {
+			foreach ($sql as $s) {
+				if (!empty($s)) {
+					$db->execute($s);
+				}
+			}
+		}
+		$this->set(compact('worksheets', 'errors', 'sql'));
 	}
 
 	public function login() {

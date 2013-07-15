@@ -44,44 +44,42 @@ class SheetSchemaTest extends CakeTestCase {
 	public function testExtractCols() {
 		$result = $this->SheetSchema->extractCols(self::$testObjects['cols']);
 		$expected = array(
-			'customers' => array(
-				'fields' => array(
-					'id' => array(
-						'type' => 'int',
-						'index' => 'primary',
-						'null' => 'no',
-					),
-					'name' => array(
-						'type' => 'string',
-						'length' => '30',
-						'null' => 'no',
-						'comment' => 'customer name',
-					),
-					'number' => array(
-						'type' => 'integer',
-					),
-					'group_id' => array(
-						'type' => 'integer',
-						'index' => 'index',
-						'null' => 'no',
-					),
-					'description' => array(
-						'type' => 'text',
-					),
+			'fields' => array(
+				'id' => array(
+					'type' => 'int',
+					'index' => 'primary',
+					'null' => 'no',
 				),
-				'initialRecords' => array(
-					[
-						0 => '1',
-						1 => 'John',
-						2 => '3',
-						3 => '2',
-					],
-					[
-						0 => '2',
-						1 => 'Mike',
-						3 => '5',
-					],
+				'name' => array(
+					'type' => 'string',
+					'length' => '30',
+					'null' => 'no',
+					'comment' => 'customer name',
 				),
+				'number' => array(
+					'type' => 'integer',
+				),
+				'group_id' => array(
+					'type' => 'integer',
+					'index' => 'index',
+					'null' => 'no',
+				),
+				'description' => array(
+					'type' => 'text',
+				),
+			),
+			'initialRecords' => array(
+				[
+					0 => '1',
+					1 => 'John',
+					2 => '3',
+					3 => '2',
+				],
+				[
+					0 => '2',
+					1 => 'Mike',
+					3 => '5',
+				],
 			),
 		);
 		$this->assertSame($expected, $result);

@@ -15,8 +15,6 @@ class SheetSchema extends SheetSchemaAppModel {
 	protected $_errors = array();
 
 	public function extractCols($cols) {
-		$table = (string)$cols->title;
-
 		$fields = array();
 		$initialRecords = array();
 		$initialRecordRow = 0;
@@ -58,7 +56,7 @@ class SheetSchema extends SheetSchemaAppModel {
 			}
 		}
 
-		return array($table => compact('fields', 'initialRecords'));
+		return compact('fields', 'initialRecords');
 	}
 
 	protected function _fieldNameMap() {
@@ -72,16 +70,13 @@ class SheetSchema extends SheetSchemaAppModel {
 	}
 
 	public function extractWorksheetCols($worksheetCols) {
-		$result = array(
-			'columns' => array(),
-			'initialRecords' => array(),
-		);
+		$result = array();
 		foreach ($worksheetCols as $cols) {
-			if (SheetSchemaAppModel::$settings['ignored_worksheet'] !== (string)$cols->title) {
+			$table = (string)$cols->title;
+			if (SheetSchemaAppModel::$settings['ignored_worksheet'] !== $table) {
 				$extracted = $this->extractCols($cols);
-				list($table, $data) = each($extracted);
-				$result['columns'][$table] = $this->translate($data['fields']);
-				$data['initialRecords'][$table]
+				$result['columns'][$table] = $this->translate($extracted['fields']);
+				$result['initialRecords'][$table] = $extracted['initialRecords'];
 			}
 		}
 
@@ -89,7 +84,9 @@ class SheetSchema extends SheetSchemaAppModel {
 	}
 
 	public function generateSchema($data) {
-		
+		$Schema = new CakeSchema;
+		$Schema->build($data);
+		return $Schema;
 	}
 
 	protected function _raiseError($error) {

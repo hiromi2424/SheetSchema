@@ -1,4 +1,4 @@
-<div class="<?php echo Inflector::underscore($this->request->controller); ?> <?php echo strtolower($this->request->action); ?>">
+<div class="<?php echo Inflector::underscore($this->request->controller); ?> view">
 	<?php echo $this->fetch('content');  ?>
 </div>
 
@@ -7,5 +7,6 @@
 	<ul>
 		<li><?php echo $this->Html->link(__d('sheet_schema', 'SheetSchema Home'), array('controller' => 'sheet_schema', 'action' => 'index')); ?></li>
 		<li><?php echo $this->Html->link(__d('sheet_schema', 'Settings'), array('controller' => 'sheet_schema_settings', 'action' => 'index')); ?></li>
+		<?php echo $this->fetch('menu'); ?>
 	</ul>
 </div>
