@@ -86,7 +86,7 @@ class SheetSchemaTest extends CakeTestCase {
 	}
 
 	public function testTranslate() {
-		$result = $this->SheetSchema->translate(array(
+		$result = $this->SheetSchema->translate('table', array(
 			'id' => array(
 				'type' => 'int',
 				'index' => 'primary',

@@ -16,8 +16,11 @@ class SheetRequest extends SheetSchemaAppModel {
 
 	const SCOPE = 'https://spreadsheets.google.com/feeds';
 
-	public function configure($settings = array()) {
-		$this->_settings = $settings;
+	public function configure($settings = null) {
+		if ($settings !== null) {
+			$this->_settings = $settings;
+		}
+		return $this->_settings;
 	}
 
 	public function authenticateUrl() {
@@ -47,7 +50,6 @@ class SheetRequest extends SheetSchemaAppModel {
 			foreach ($result->entry as $worksheet) {
 				$worksheet->key = $key;
 				$worksheet->worksheetId = $this->_extractId($worksheet);
-		//$this->getService()->worksheets->cellsFeed($key, $worksheet->worksheetId);
 			}
 		}
 		return $result;

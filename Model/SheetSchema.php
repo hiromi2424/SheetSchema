@@ -14,6 +14,10 @@ class SheetSchema extends SheetSchemaAppModel {
 
 	protected $_errors = array();
 
+	public $actsAs = [
+		'SheetSchema.SheetSchemaTranslator',
+	];
+
 	public function extractCols($cols) {
 		$fields = array();
 		$initialRecords = array();
@@ -75,7 +79,8 @@ class SheetSchema extends SheetSchemaAppModel {
 			$table = (string)$cols->title;
 			if (SheetSchemaAppModel::$settings['ignored_worksheet'] !== $table) {
 				$extracted = $this->extractCols($cols);
-				$result['columns'][$table] = $this->translate($extracted['fields']);
+				$result['fields'][$table] = array_keys($extracted['fields']);
+				$result['columns'][$table] = $this->translate($table, $extracted['fields']);
 				$result['initialRecords'][$table] = $extracted['initialRecords'];
 			}
 		}
@@ -89,25 +94,25 @@ class SheetSchema extends SheetSchemaAppModel {
 		return $Schema;
 	}
 
-	protected function _raiseError($error) {
-		$this->_errors = $error;
+	public function raiseError($error) {
+		$this->_errors[] = $error;
 	}
 
 	public function getErrors() {
 		return $this->_errors;
 	}
 
-	public function translate($fields) {
+	public function translate($table, $fields) {
 		$result = array();
 		$this->_errors = array();
 		foreach ($fields as $column => $types) {
 			$result[$column] = array();
 			foreach ($types as $type => $value) {
-				$method = '_translate' . ucfirst(strtolower($type));
-				if (!method_exists($this, $method)) {
+				$method = 'translate' . ucfirst(strtolower($type));
+				if (!$this->hasMethod($method)) {
 					throw new LogicException(__d('cake_schema', '[%s] column is not supported.', $type));
 				} else {
-					$this->$method($column, $value, $result);
+					$result = $this->$method($table, $column, $value, $result);
 				}
 			}
 			if (!isset($result[$column]['null'])) {
@@ -125,80 +130,43 @@ class SheetSchema extends SheetSchemaAppModel {
 		return $result;
 	}
 
-	protected function _translateType($column, $value, &$result) {
-		$type = preg_replace('/int$/', 'integer', $value);
+/**
+ * Generates INSERT statements
+ *
+ * @todo Future version will generate sql with core feature using CakePHP3.0
+ * @param string $table The table being inserted into.
+ * @param array $fields The array of field/column names being inserted.
+ * @param array $records The array of values to insert. The values should
+ *   be an array of rows. Each row must have the values in the same order
+ *   as $fields.
+ * @return array List of generated SQL
+ */
+	public function generateInsertStatements($table, $fields, $records) {
 		$db = $this->getDataSource();
-		if (!isset($db->columns[$type])) {
-			return $this->_raiseError(__d('cake_schema', 'Field type [%s] is not supported.', $value));
+		$table = $db->fullTableName($table);
+		$columns = implode(', ', array_map(array($db, 'name'), $fields));
+
+		$pdoMap = array(
+			'integer' => PDO::PARAM_INT,
+			'float' => PDO::PARAM_STR,
+			'boolean' => PDO::PARAM_BOOL,
+			'string' => PDO::PARAM_STR,
+			'text' => PDO::PARAM_STR
+		);
+		$columnMap = array();
+
+		$sqlBase = "INSERT INTO {$table} ({$columns}) VALUES";
+
+		$result = array();
+		foreach ($records as $record) {
+			$values = array();
+			foreach ($fields as $key => $field) {
+				$value = isset($record[$key]) ? $record[$key] : null;
+				$value = $db->value($value);
+				$values[] = $value;
+			}
+			$result[] = $sqlBase . '(' . implode(', ', $values) . ');';
 		}
-
-		$result[$column]['type'] = $type;
+		return $result;
 	}
-
-	protected function _translateLength($column, $value, &$result) {
-		$result[$column]['length'] = intval($value);
-	}
-
-	protected function _translateIndex($column, $value, &$result) {
-		$type = strtolower($value);
-		if (!in_array($type, $this->getDataSource()->index)) {
-			return $this->_raiseError(__d('cake_schema', 'Index type [%s] is not supported.', $value));
-		}
-
-		if (!isset($result['indexes'])) {
-			$result['indexes'] = array();
-		}
-
-		$key = $type === 'primary' ? 'PRIMARY' : $column;
-		$unique = $type !== 'index';
-		$result['indexes'][$key] = compact('column', 'unique');
-		$result[$column]['key'] = $type;
-	}
-
-	protected function _translateNull($column, $value, &$result) {
-		$value = strtolower($value);
-		switch ($value) {
-			case 'ok':
-			case 'yes':
-			case 'y':
-			case '1':
-				$value = true;
-				break;
-			case 'ng':
-			case 'no':
-			case 'n':
-			case '0':
-				$value = false;
-				break;
-			case 'true':
-			case 'false':
-				$value = $value === 'true';
-			default:
-				$this->_raiseError(__d('cake_schema', 'The string of null value "%s" could not be understood as boolean', $value));
-		}
-		$result[$column]['null'] = $value;
-	}
-
-	protected function _translateDefault($column, $value, &$result) {
-		$result[$column]['default'] = $this->_value($value);
-	}
-
-	protected function _translateComment($column, $value, &$result) {
-		$result[$column]['comment'] = $value;
-	}
-
-	protected function _value($value) {
-		switch ($value) {
-			case 'null':
-			case 'true':
-			case 'false':
-				$value = eval($value);
-		}
-
-		return $value;
-	}
-
-	public function insertInitialRecords($data) {
-	}
-
 }

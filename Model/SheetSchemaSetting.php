@@ -3,6 +3,7 @@
 App::uses('SheetSchemaAppModel', 'SheetSchema.Model');
 App::uses('ConnectionManager', 'Model');
 App::uses('Security', 'Utility');
+App::uses('String', 'Utility');
 App::uses('Validation', 'Utility');
 
 class SheetSchemaSetting extends SheetSchemaAppModel {
@@ -49,7 +50,7 @@ class SheetSchemaSetting extends SheetSchemaAppModel {
 				'rule' => array('maxLength', 255),
 			),
 		);
-		$messageTemplate = __d('cake_schema', 'The %s is too long.');
+		$messageTemplate = __d('cake_schema', 'The :title is too long. Maximum characters is %s.');
 		$stringFields = array(
 			'client_id' => __d('cake_schema', 'Client ID'),
 			'client_secret' => __d('cake_schema', 'Client Secret'),
@@ -71,7 +72,7 @@ class SheetSchemaSetting extends SheetSchemaAppModel {
 				$field = 'name_' . $field;
 			}
 			$Validator->add($field, $stringValidation);
-			$Validator->getField($field)->getRule('maxLength')->message = sprintf($messageTemplate, $title);
+			$Validator->getField($field)->getRule('maxLength')->message = String::insert($messageTemplate, compact('title'));
 		}
 
 		$notRequired = array(
@@ -127,7 +128,8 @@ class SheetSchemaSetting extends SheetSchemaAppModel {
 		}
 
 		include $file;
-		SheetSchemaAppModel::$settings = json_decode(Security::rijndael(base64_decode($settings), $this->_key(), 'decrypt'), true);
+		$decrypted = Security::rijndael(base64_decode($settings), $this->_key(), 'decrypt');
+		SheetSchemaAppModel::$settings = json_decode($decrypted, true);
 		return SheetSchemaAppModel::$settings;
 	}
 

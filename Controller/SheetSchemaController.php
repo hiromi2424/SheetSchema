@@ -85,8 +85,15 @@ class SheetSchemaController extends SheetSchemaAppController {
 			foreach (array_keys($Schema->tables) as $table) {
 				$sql[] = $db->dropSchema($Schema, $table);
 				$sql[] = $db->createSchema($Schema, $table);
+				if (!empty($extracted['initialRecords'][$table])) {
+					$insertStatements = $this->SheetSchema->generateInsertStatements(
+						$table,
+						$extracted['fields'][$table],
+						$extracted['initialRecords'][$table]
+					);
+					$sql = array_merge($sql, $insertStatements);
+				}
 			}
-			$sql[] = $this->SheetSchema->insertInitialRecords($extracted['initialRecords']);
 		}
 		return compact('sql', 'errors', 'db', 'Schema');
 	}
